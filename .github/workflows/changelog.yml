@@ -1,0 +1,20 @@
+name: Changelog
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  changelog:
+    if: github.event.pull_request.merged == true && !startsWith(github.event.pull_request.head.ref, 'nwc/changelog-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          pr-url: ${{ github.event.pull_request.html_url }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}

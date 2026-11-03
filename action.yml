@@ -1,0 +1,30 @@
+name: "No, What Changed?"
+description: "Reads a merged PR's diff and opens a PR that adds an honest CHANGELOG.md entry."
+inputs:
+  pr-url:
+    description: "URL of the merged PR"
+    required: true
+  github-token:
+    description: "Token with contents and pull-requests write access"
+    required: true
+  openai-api-key:
+    description: "OpenAI API key"
+    required: true
+  model:
+    description: "OpenAI model"
+    default: "gpt-4o-mini"
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - shell: bash
+      run: pip install "${{ github.action_path }}"
+    - shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        OPENAI_API_KEY: ${{ inputs.openai-api-key }}
+        NWC_MODEL: ${{ inputs.model }}
+        PR_URL: ${{ inputs.pr-url }}
+      run: nwc "$PR_URL" --apply
